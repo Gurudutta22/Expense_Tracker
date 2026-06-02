@@ -51,16 +51,6 @@ under budget.
 
 ---
 
-## What this project demonstrates (for interviews)
-- **CRUD + REST:** create, read, and delete expenses through a clean JSON API.
-- **SQL aggregation:** the dashboard uses a JPQL **GROUP BY** query (`SUM(amount)` per category) plus
-  date-range sums — see `repository/ExpenseRepository.java`.
-- **Simple DSA:** totals are grouped with a `HashMap` and categories are **sorted** by spend.
-- **Multithreading (light):** `@Async` audit logging runs off the request thread, and a `@Scheduled`
-  task logs a periodic spending insight — see `service/AuditService.java` and `service/InsightsService.java`.
-- **Money done right:** all amounts use `BigDecimal`, never `double`.
-- **Layered design:** Controller → Service → Repository, with DTOs separating the API from entities.
-
 ## Project structure
 ```
 expense-tracker/
