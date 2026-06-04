@@ -138,11 +138,21 @@
 
       <div class="panel">
         <h3>Set a monthly budget</h3>
+        
         <div class="body">
+          <label>Total Budget (₹)</label>
+<input
+  id="totalBudget"
+  class="num"
+  type="number"
+  min="0"
+  step="100"
+  placeholder="0">
           <div class="row2">
             <div><label>Category</label><select id="bCategory"></select></div>
             <div><label>Monthly limit (₹)</label><input id="bLimit" class="num" type="number" min="0" step="100" placeholder="0"></div>
           </div>
+          
           <button class="btn ghost" id="bSave">Save budget</button>
         </div>
       </div>
