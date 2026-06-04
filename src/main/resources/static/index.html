@@ -8,12 +8,86 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  .theme-select{
+  padding:8px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--card);
+  color:var(--ink);
+  font-family:var(--ui);
+  cursor:pointer;
+}
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background-color: #d1d5db;
+    border-radius: 34px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.slider:before {
+    content: "☀️";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    left: 4px;
+    top: 4px;
+    background: white;
+    border-radius: 50%;
+    transition: .3s;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+    content: "🌙";
+}
+
+input:checked + .slider {
+    background: #6246ea;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.theme-btn:hover{
+    transform:scale(1.05);
+}
   :root{
     --bg:#f4f1ea; --card:#fffdf9; --ink:#211d2a; --muted:#6f6a78; --dim:#a8a2b0;
     --line:#ebe6dc; --accent:#5a44d6; --accent-2:#8a6cf0; --accent-soft:#ece8fb; --ok:#2e9e6b; --over:#db4b57;
     --shadow:0 12px 32px -14px rgba(53,40,90,.20);
     --ui:'Plus Jakarta Sans',system-ui,sans-serif; --disp:'Fraunces',Georgia,serif;
   }
+  body.dark{
+  --bg:#121212;
+  --card:#1e1e1e;
+  --ink:#f5f5f5;
+  --muted:#b0b0b0;
+  --dim:#888888;
+  --line:#333333;
+  --accent:#7d5cf0;
+  --accent-2:#9b7bff;
+  --accent-soft:#2d254a;
+}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;
        background-image:radial-gradient(820px 440px at 100% -8%, #e7e0fb, transparent 60%), radial-gradient(720px 400px at -6% 0%, #f4ead7, transparent 56%);}
@@ -98,6 +172,10 @@
   </div>
   <div class="spacer"></div>
   <div class="pill"><span class="dot" id="dot"></span><span id="status">connecting…</span></div>
+  <label class="theme-switch">
+    <input type="checkbox" id="themeToggle">
+    <span class="slider"></span>
+</label>
   <div class="month num" id="monthLabel"></div>
 </header>
 
@@ -164,6 +242,26 @@
 
 <script>
 let LIVE = false;
+function applyTheme(mode){
+
+  if(mode === "dark"){
+    document.body.classList.add("dark");
+  }
+  else if(mode === "light"){
+    document.body.classList.remove("dark");
+  }
+  else{
+    const prefersDark =
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    document.body.classList.toggle("dark", prefersDark);
+  }
+
+  localStorage.setItem("themeMode", mode);
+  
+}
+
+
 let CATS = ["FOOD","TRANSPORT","SHOPPING","BILLS","ENTERTAINMENT","HEALTH","OTHER"];
 const COLOR = {FOOD:"#e0913b",TRANSPORT:"#2fa6a2",SHOPPING:"#d6568b",BILLS:"#d9553f",ENTERTAINMENT:"#7a5bd8",HEALTH:"#3fae6e",OTHER:"#7c8597"};
 const $ = id => document.getElementById(id);
@@ -320,11 +418,43 @@ async function saveBudget(){
 async function boot(){
   await loadInit();
   renderCats();
+
   $("date").value = todayISO();
   $("addBtn").onclick = add;
   $("bSave").onclick = saveBudget;
+
+  const hour = new Date().getHours();
+
+const autoTheme =
+    (hour >= 6 && hour < 18)
+    ? "light"
+    : "dark";
+  const savedTheme =
+    localStorage.getItem("themeMode") || autoTheme;
+
+  applyTheme(savedTheme);
+  $("themeToggle").checked = savedTheme === "dark";
+
+  $("themeToggle").addEventListener("change", () => {
+
+    if($("themeToggle").checked){
+        applyTheme("dark");
+    }else{
+        applyTheme("light");
+    }
+
+});
+
   await refresh();
 }
+window.matchMedia("(prefers-color-scheme: dark)")
+.addEventListener("change", () => {
+
+  if(localStorage.getItem("themeMode") === "auto"){
+    applyTheme("auto");
+  }
+
+});
 boot();
 </script>
 </body>
