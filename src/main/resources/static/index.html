@@ -70,6 +70,10 @@ input:checked + .slider:before {
     content: "🌙";
 }
 
+.budget-card{
+  max-width:450px;
+  margin:20px 0;
+}
 input:checked + .slider {
     background: #6246ea;
 }
@@ -200,8 +204,11 @@ input:checked + .slider:before {
     <div class="stat"><div class="lbl">All-time spend</div><div class="val num small" id="sAll">—</div><div class="hint">across all months</div></div>
   </div>
 
-  <div class="panel" id="newBudgetCard" style="display:none;">
-  <h3>Create New Budget</h3>
+<div
+  class="panel budget-card"
+  id="newBudgetCard"
+  style="display:none;"
+>  <h3>Create New Budget</h3>
 
   <div class="body">
     <label>Monthly Budget (₹)</label>
