@@ -199,8 +199,37 @@ input:checked + .slider:before {
 <div class="wrap">
   <div class="cards">
     <div class="stat"><div class="lbl">Spent this month</div><div class="val num" id="sSpent">—</div><div class="hint" id="sCount"></div></div>
-    <div class="stat"><div class="lbl">Budget left</div><div class="val num" id="sLeft">—</div><div class="hint" id="sBudget"></div></div>
-    <div class="stat"><div class="lbl">Top category</div><div class="val small" id="sTop">—</div><div class="hint" id="sTopAmt"></div></div>
+<div class="stat">
+  <div
+    style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    "
+  >
+    <div class="lbl">Budget left</div>
+
+    <button
+      id="addBudgetBtn"
+      style="
+        width:22px;
+        height:22px;
+        border:none;
+        border-radius:50%;
+        background:#6246ea;
+        color:white;
+        cursor:pointer;
+        font-size:14px;
+        font-weight:bold;
+      "
+    >
+      +
+    </button>
+  </div>
+
+  <div class="val num" id="sLeft">—</div>
+  <div class="hint" id="sBudget"></div>
+</div>    <div class="stat"><div class="lbl">Top category</div><div class="val small" id="sTop">—</div><div class="hint" id="sTopAmt"></div></div>
     <div class="stat"><div class="lbl">All-time spend</div><div class="val num small" id="sAll">—</div><div class="hint">across all months</div></div>
   </div>
 
@@ -220,7 +249,7 @@ input:checked + .slider:before {
       placeholder="Enter budget amount"
     >
 
-    <button class="btn" id="saveNewBudgetBtn">
+    <button class="theme-btn" id="saveNewBudgetBtn">
       Create Budget
     </button>
   </div>
@@ -236,7 +265,7 @@ input:checked + .slider:before {
           </div>
           <label>Category</label><select id="category"></select>
           <label>Description</label><input id="desc" placeholder="e.g. Groceries">
-          <button class="btn" id="addBtn">Add expense</button>
+          <button class="theme-btn" id="addBtn">Add expense</button>
         </div>
       </div>
 
@@ -256,14 +285,7 @@ input:checked + .slider:before {
         <h3>Set a monthly budget</h3>
         
         <div class="body">
-          <label>Total Budget (₹)</label>
-<input
-  id="totalBudget"
-  class="num"
-  type="number"
-  min="0"
-  step="100"
-  placeholder="0">
+       
           <div class="row2">
             <div><label>Category</label><select id="bCategory"></select></div>
             <div><label>Monthly limit (₹)</label><input id="bLimit" class="num" type="number" min="0" step="100" placeholder="0"></div>
@@ -276,6 +298,80 @@ input:checked + .slider:before {
   </div>
 </div>
 
+<div
+  class="panel budget-card"
+  id="addBudgetCard"
+  style="display:none;"
+>
+  <div class="hd">
+    Add Budget
+  </div>
+
+  <div class="body">
+
+    <div
+      style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:16px;
+      "
+    >
+      <button id="plus50" class="theme-btn">
+        +50
+      </button>
+
+      <button id="plus100" class="theme-btn">
+        +100
+      </button>
+
+      <button id="plus500" class="theme-btn">
+        +500
+      </button>
+
+      <button id="plusMore" class="theme-btn">
+        +More
+      </button>
+    </div>
+
+    <label>
+      Amount To Add
+    </label>
+
+    <input
+      id="budgetAddAmount"
+      type="number"
+      value="0"
+    >
+
+    <div
+      id="moreAmountWrap"
+      style="
+        display:none;
+        margin-top:12px;
+      "
+    >
+      <label>
+        Custom Amount
+      </label>
+
+      <input
+        id="customBudgetAmount"
+        type="number"
+        placeholder="Enter amount"
+      >
+    </div>
+
+    <button
+      id="addToBudgetBtn"
+      class="theme-btn"
+      style="margin-top:16px;"
+    >
+      Add To Budget
+    </button>
+
+  </div>
+</div>
 <div id="toasts"></div>
 
 <script>
@@ -460,18 +556,103 @@ function startNewBudget(){
     block: "start"
   });
 }
+function createBudget(){
 
+  const budget =
+    parseFloat($("newBudgetAmount").value);
+
+  if(!(budget > 0)){
+    toast(
+      "Invalid Budget",
+      "Enter a valid amount",
+      true
+    );
+    return;
+  }
+
+  demoExp = [];
+  demoBud = {};
+
+  demoBud["TOTAL"] = budget;
+
+  $("newBudgetAmount").value = "";
+  $("newBudgetCard").style.display = "none";
+
+  toast(
+    "Budget Created",
+    "Previous entries cleared"
+  );
+
+  refresh();
+}
+let budgetAddition = 0;
 async function boot(){
   await loadInit();
   renderCats();
 
-  $("newBudgetBtn").onclick = startNewBudget;
+  $("addToBudgetBtn").onclick = () => {
 
-$("saveNewBudgetBtn").onclick =
-  createBudget;
-  $("date").value = todayISO();
-  $("addBtn").onclick = add;
-  $("bSave").onclick = saveBudget;
+  const custom =
+    parseFloat($("customBudgetAmount").value) || 0;
+
+  budgetAddition += custom;
+
+  demoBud["TOTAL"] =
+    (demoBud["TOTAL"] || 0) + budgetAddition;
+
+  budgetAddition = 0;
+
+  $("budgetAddAmount").value = 0;
+  $("customBudgetAmount").value = "";
+
+  $("addBudgetCard").style.display = "none";
+
+  refresh();
+};
+
+  //for the increment button in the add budget section
+ 
+
+function updateBudgetAmount(){
+  $("budgetAddAmount").value = budgetAddition;
+}
+
+$("plus50").onclick = () => {
+  budgetAddition += 50;
+  updateBudgetAmount();
+};
+
+$("plus100").onclick = () => {
+  budgetAddition += 100;
+  updateBudgetAmount();
+};
+
+$("plus500").onclick = () => {
+  budgetAddition += 500;
+  updateBudgetAmount();
+};
+
+$("plusMore").onclick = () => {
+  $("moreAmountWrap").style.display = "block";
+};
+  $("addBudgetBtn").onclick = () => {
+
+  $("addBudgetCard").style.display = "block";
+
+  $("addBudgetCard").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+};
+
+$("newBudgetBtn").onclick = startNewBudget;
+
+$("saveNewBudgetBtn").onclick = createBudget;
+
+$("date").value = todayISO();
+$("addBtn").onclick = add;
+$("bSave").onclick = saveBudget;
  $("newBudgetBtn").onclick = startNewBudget;
 
   const hour = new Date().getHours();
@@ -506,35 +687,54 @@ window.matchMedia("(prefers-color-scheme: dark)")
   }
 
 });
-function createBudget(){
+// function createBudget(){
 
-  const budget =
-    parseFloat($("newBudgetAmount").value);
+//   const budget =
+//     parseFloat($("newBudgetAmount").value);
 
-  if(!(budget > 0)){
-    toast(
-      "Invalid Budget",
-      "Enter a valid amount",
-      true
-    );
-    return;
-  }
+//   if(!(budget > 0)){
+//     toast(
+//       "Invalid Budget",
+//       "Enter a valid amount",
+//       true
+//     );
+//     return;
+//   }
 
-  demoExp = [];
-  demoBud = {};
+//   demoExp = [];
+//   demoBud = {};
 
-  demoBud["TOTAL"] = budget;
+//   demoBud["TOTAL"] = budget;
 
-  $("newBudgetAmount").value = "";
-  $("newBudgetCard").style.display = "none";
+//   $("newBudgetAmount").value = "";
+//   $("newBudgetCard").style.display = "none";
 
-  toast(
-    "Budget Created",
-    "Previous entries cleared"
-  );
+//   toast(
+//     "Budget Created",
+//     "Previous entries cleared"
+//   );
 
-  refresh();
-}
+//   refresh();
+// }
+// $("addToBudgetBtn").onclick = () => {
+
+//   const custom =
+//     parseFloat($("customBudgetAmount").value) || 0;
+
+//   budgetAddition += custom;
+
+//   demoBud["TOTAL"] =
+//     (demoBud["TOTAL"] || 0) + budgetAddition;
+
+//   budgetAddition = 0;
+
+//   $("budgetAddAmount").value = 0;
+//   $("customBudgetAmount").value = "";
+
+//   $("addBudgetCard").style.display = "none";
+
+//   refresh();
+// };
 boot();
 </script>
 </body>
