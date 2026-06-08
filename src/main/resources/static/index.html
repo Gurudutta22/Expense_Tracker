@@ -30,6 +30,16 @@
     height: 0;
 }
 
+.theme-btn{
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  background:#6246ea;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
 .slider {
     position: absolute;
     inset: 0;
@@ -177,6 +187,9 @@ input:checked + .slider:before {
     <span class="slider"></span>
 </label>
   <div class="month num" id="monthLabel"></div>
+  <button id="newBudgetBtn" class="theme-btn">
+  New Budget
+</button>
 </header>
 
 <div class="wrap">
@@ -187,6 +200,24 @@ input:checked + .slider:before {
     <div class="stat"><div class="lbl">All-time spend</div><div class="val num small" id="sAll">—</div><div class="hint">across all months</div></div>
   </div>
 
+  <div class="panel" id="newBudgetCard" style="display:none;">
+  <h3>Create New Budget</h3>
+
+  <div class="body">
+    <label>Monthly Budget (₹)</label>
+
+    <input
+      id="newBudgetAmount"
+      type="number"
+      min="0"
+      placeholder="Enter budget amount"
+    >
+
+    <button class="btn" id="saveNewBudgetBtn">
+      Create Budget
+    </button>
+  </div>
+</div>
   <div class="grid">
     <div class="col">
       <div class="panel">
@@ -414,14 +445,27 @@ async function saveBudget(){
   try { await setBudget({category, monthlyLimit}); toast("Budget saved", nice(category) + " · " + money(monthlyLimit)); $("bLimit").value=""; refresh(); }
   catch(err){ toast("Couldn't save",(err&&err.error)||"Failed", true); }
 }
+function startNewBudget(){
+  $("newBudgetCard").style.display = "block";
+
+  $("newBudgetCard").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
 
 async function boot(){
   await loadInit();
   renderCats();
 
+  $("newBudgetBtn").onclick = startNewBudget;
+
+$("saveNewBudgetBtn").onclick =
+  createBudget;
   $("date").value = todayISO();
   $("addBtn").onclick = add;
   $("bSave").onclick = saveBudget;
+ $("newBudgetBtn").onclick = startNewBudget;
 
   const hour = new Date().getHours();
 
@@ -455,6 +499,35 @@ window.matchMedia("(prefers-color-scheme: dark)")
   }
 
 });
+function createBudget(){
+
+  const budget =
+    parseFloat($("newBudgetAmount").value);
+
+  if(!(budget > 0)){
+    toast(
+      "Invalid Budget",
+      "Enter a valid amount",
+      true
+    );
+    return;
+  }
+
+  demoExp = [];
+  demoBud = {};
+
+  demoBud["TOTAL"] = budget;
+
+  $("newBudgetAmount").value = "";
+  $("newBudgetCard").style.display = "none";
+
+  toast(
+    "Budget Created",
+    "Previous entries cleared"
+  );
+
+  refresh();
+}
 boot();
 </script>
 </body>
