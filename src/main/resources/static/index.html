@@ -235,25 +235,40 @@ input:checked + .slider:before {
 
 <div
   class="panel budget-card"
-  id="newBudgetCard"
+  id="addBudgetCard"
   style="display:none;"
->  <h3>Create New Budget</h3>
+>
+  <div class="hd">
+    Add Budget
+  </div>
 
   <div class="body">
-    <label>Monthly Budget (₹)</label>
 
-    <input
-      id="newBudgetAmount"
-      type="number"
-      min="0"
-      placeholder="Enter budget amount"
+    <div
+      style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        margin-bottom:16px;
+      "
     >
+      <button id="plus50" class="theme-btn">
+        +50
+      </button>
 
-    <button class="theme-btn" id="saveNewBudgetBtn">
-      Create Budget
-    </button>
-  </div>
-</div>
+      <button id="plus100" class="theme-btn">
+        +100
+      </button>
+
+      <button id="plus500" class="theme-btn">
+        +500
+      </button>
+
+      <button id="plusMore" class="theme-btn">
+        +More
+      </button>
+    </div>
+
   <div class="grid">
     <div class="col">
       <div class="panel">
@@ -298,41 +313,6 @@ input:checked + .slider:before {
   </div>
 </div>
 
-<div
-  class="panel budget-card"
-  id="addBudgetCard"
-  style="display:none;"
->
-  <div class="hd">
-    Add Budget
-  </div>
-
-  <div class="body">
-
-    <div
-      style="
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-        margin-bottom:16px;
-      "
-    >
-      <button id="plus50" class="theme-btn">
-        +50
-      </button>
-
-      <button id="plus100" class="theme-btn">
-        +100
-      </button>
-
-      <button id="plus500" class="theme-btn">
-        +500
-      </button>
-
-      <button id="plusMore" class="theme-btn">
-        +More
-      </button>
-    </div>
 
     <label>
       Amount To Add
@@ -370,6 +350,27 @@ input:checked + .slider:before {
       Add To Budget
     </button>
 
+  </div>
+</div>
+<div
+  class="panel budget-card"
+  id="newBudgetCard"
+  style="display:none;"
+>  <h3>Create New Budget</h3>
+
+  <div class="body">
+    <label>Monthly Budget (₹)</label>
+
+    <input
+      id="newBudgetAmount"
+      type="number"
+      min="0"
+      placeholder="Enter budget amount"
+    >
+
+    <button class="theme-btn" id="saveNewBudgetBtn">
+      Create Budget
+    </button>
   </div>
 </div>
 <div id="toasts"></div>
@@ -549,12 +550,15 @@ async function saveBudget(){
   catch(err){ toast("Couldn't save",(err&&err.error)||"Failed", true); }
 }
 function startNewBudget(){
+
+  $("addBudgetCard").style.display = "none";
+
   $("newBudgetCard").style.display = "block";
 
   $("newBudgetCard").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+    behavior: "smooth"
   });
+
 }
 function createBudget(){
 
@@ -635,13 +639,14 @@ $("plus500").onclick = () => {
 $("plusMore").onclick = () => {
   $("moreAmountWrap").style.display = "block";
 };
-  $("addBudgetBtn").onclick = () => {
+$("addBudgetBtn").onclick = () => {
+
+  $("newBudgetCard").style.display = "none";
 
   $("addBudgetCard").style.display = "block";
 
   $("addBudgetCard").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+    behavior: "smooth"
   });
 
 };
